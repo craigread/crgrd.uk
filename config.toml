@@ -1,7 +1,7 @@
 baseURL = "/"
 languageCode = "en-gb"
 defaultContentLanguage = "en"
-title = "Jon Seager"
+title = "Craig Read"
 theme = "hermit"
 # enableGitInfo = true
 pygmentsCodefences  = true
@@ -14,7 +14,7 @@ enableEmoji = true  # Shorthand emojis in content files - https://gohugo.io/func
 # disqusShortname = "yourdiscussshortname"
 disableKinds = "RSS"
 [author]
-  name = "Jon Seager"
+  name = "Craig Read"
 
 [blackfriday]
   # hrefTargetBlank = true
@@ -57,22 +57,18 @@ disableKinds = "RSS"
   # Check https://github.com/Track3/hermit#social-icons for more info.
 
   [[params.social]]
-    name = "twitter"
-    url = "https://twitter.com/jnsgruk/"
-
-  [[params.social]]
     name = "github"
-    url = "https://github.com/jnsgruk/"
+    url = "https://github.com/craigread/"
   
   [[params.social]]
     name = "linkedin"
-    url = "https://linkedin.com/in/jnsgruk/"
+    url = "https://www.linkedin.com/in/craig-read-14775143/"
 
   [[params.social]]
     name = "telegram"
-    url = "https://t.me/jnsgruk/"
+    url = "https://t.me/crgrd/"
   
-
+  
 [menu]
 
 #  [[menu.main]]
