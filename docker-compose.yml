@@ -1,0 +1,65 @@
+version: "3"
+
+networks:
+  proxy:
+  socket_proxy:
+
+services:
+  socket-proxy:
+    image: tecnativa/docker-socket-proxy
+    container_name: socket-proxy
+    privileged: yes
+    environment:
+      - CONTAINERS=1
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - socket_proxy
+    restart: always
+
+  traefik:
+    image: traefik:v2.3.5
+    container_name: traefik
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - socket-proxy
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.endpoint=tcp://socket-proxy:2375"
+      - "--providers.docker.network=proxy"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myhttpchallenge.acme.httpchallenge=true"
+      - "--certificatesresolvers.myhttpchallenge.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.myhttpchallenge.acme.email=webmaster@crgrd.uk"
+      - "--certificatesresolvers.myhttpchallenge.acme.storage=/letsencrypt/acme.json"
+    volumes:
+      - /home/craig/crgrd.uk/state/traefik/letsencrypt:/letsencrypt
+    networks:
+      - proxy
+      - socket_proxy
+    restart: always
+
+  crgrduk:
+    build:
+      context: .
+    image: crgrd.uk/crgrd.uk:0.1
+    container_name: crgrduk
+    environment:
+      WEBROOT: ./public
+      REDIRECT_MAP_URL: https://gist.githubusercontent.com/craigread/eb1dbaa0f1e477f77fc64f1ad9e7b6fb/raw
+    networks:
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.crgrduk.rule=Host(`crgrd.uk`) || Host(`www.crgrd.uk`)"
+      - "traefik.http.routers.crgrduk.entrypoints=websecure"
+      - "traefik.http.routers.crgrduk.tls=true"
+      - "traefik.http.routers.crgrduk.tls.certresolver=myhttpchallenge"
+    restart: unless-stopped
+
